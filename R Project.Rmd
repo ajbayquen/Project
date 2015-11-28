@@ -1,0 +1,63 @@
+---
+title: "R Project"
+author: "Antonio J Bayquen"
+date: "November 28, 2015"
+output: html_document
+---
+
+
+```{r}
+require(hflights)
+
+head(hflights)
+
+head(hflights[,c("Year","Month","DayofMonth","UniqueCarrier","TailNum")])
+
+
+hflights$FlightDate <- as.Date(paste(hflights$Year, hflights$Month, hflights$DayofMonth, sep="."), format="%Y.%m.%d")
+
+head(hflights[,c("Year","Month","DayofMonth","UniqueCarrier","TailNum")])
+
+hflights$FlightRate <- hflights$Distance/hflights$ActualElapsedTime
+
+airlines <- unique(hflights$UniqueCarrier, incomparables = FALSE)
+
+airlines.flights <-  unique(paste(hflights$UniqueCarrier, hflights$FlightNum))
+
+airlines.flights1 <- (substr(airlines.flights,1,2))
+
+table(airlines.flights1)
+
+
+airlines.flights.Origin <-  unique(paste(hflights$Origin, hflights$UniqueCarrier, hflights$FlightNum))
+
+airlines.flights1.Origin <- (substr(airlines.flights.Origin,1,6))
+
+table(airlines.flights1.Origin)
+
+flgorg <- data.frame(flight.Org=table(airlines.flights1.Origin))
+
+boxplot(flgorg, xlab="Airport-Carrier (HOU and IAH)", ylab="Flight Frequency")
+
+
+
+badflights <- subset(hflights, ArrDelay + DepDelay > 15 | (Cancelled == 1 & CancellationCode == "A") )
+
+airlines.badflights <-  unique(paste(badflights$UniqueCarrier, badflights$FlightNum))
+
+airlines.badflights1 <- (substr(airlines.badflights,1,2))
+
+table(airlines.badflights1)
+
+badfdf <- data.frame(badf=table(airlines.badflights1), flg=table(airlines.flights1))
+
+badfdf$percentdelay <- round(((badfdf$badf.Freq/badfdf$flg.Freq)*100),digits=2)
+
+plot(badfdf$badf.airlines.badflights1, xlab="Airlines", badfdf$percentdelay, ylab="% Delayed Flights")
+
+
+N541AA <- subset(hflights, TailNum == "N541AA" & substr(FlightDate,1,7) >= "2011-01" &substr(FlightDate,1,7) <=  "2011-06")
+
+```
+
+
