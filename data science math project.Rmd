@@ -1,0 +1,261 @@
+---
+title: "Data Science Math Project"
+author: "Antonio J Bayquen"
+date: "November 29, 2015"
+output: html_document
+---
+
+```{r}
+require(hflights)
+
+#Arrival Delays is my random variable X
+#This variable is skewed to the right
+#Median is less than the mean
+my.ArrDelay <- hflights$ArrDelay
+hist(my.ArrDelay, xaxp=c(-50,300,20))
+
+summary(my.ArrDelay)
+## Min.    1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+## -70.000  -8.000   0.000   7.094  11.000 978.000    3622 
+length(my.ArrDelay)
+# N - took out NA's
+# N = 227496 - 3622
+227496 - 3622
+223874
+
+#Deparature Delays is my random variable Y
+#This variable is also skewed to the right
+#Median is less than the mean
+my.DepDelay <- hflights$DepDelay
+hist(my.DepDelay, xaxp=c(-50,300,20))
+
+summary(my.DepDelay)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#-33.000  -3.000   0.000   9.445   9.000 981.000    2905 
+length(my.DepDelay)
+# N = 227496 - 2905
+# N - took out NA's
+227496 - 2905
+224591
+
+#Probabilty PROBLEMS
+
+#a. P(X>x | Y>y) = 0.4323236
+#P(X>x | Y>y) = (P(X>x)intersection P(Y>y))/P(Y>y)
+#P(Y>y) = 0.5
+nrow(subset(hflights, ArrDelay > 11.000 & DepDelay > 0.000))
+#48548 = (P(X>x)intersection P(Y>y)) - number of rows that meet the condition
+(48548/224591)/0.5
+0.4323236
+
+#b.P(X>x, Y>y) = 0.125
+0.25*0.50
+
+#c. P(X<x | Y>y)
+#P(X<x | Y>y) = P(X<x)intersection P(Y>y)/P(Y>y)
+nrow(subset(hflights, ArrDelay < 11.000 & DepDelay > 0.000))
+58780
+(58780/224591)/0.5
+0.5234404
+
+#d. P(X<x | Y<y)
+#P(X<x | Y<y) = P(X<x)intersection P(Y<y)/P(Y<y)
+nrow(subset(hflights, ArrDelay < 11.000 & DepDelay < 0.000))
+90992
+(90992/224591)/0.5
+0.8102907
+
+
+# x/y                <=2d quartile   >2d quartile    Total
+# <=3d quartile          0.482         0.272         0.754  
+# >3d quartile           0.027         0.216         0.243   
+# Total                  0.509         0.488         1.00
+
+#No. Splitting the data above does not make them more independent. In fact, it shows the possible relationship
+#between the 2 variables. It shows the common values for the X and Y variables
+nrow(subset(hflights, ArrDelay <= 11.000 & DepDelay <= 0.000))
+108141/224591
+0.4815019
+nrow(subset(hflights, ArrDelay <= 11.000 & DepDelay > 0.000))
+61026/224591
+0.2717206
+nrow(subset(hflights, ArrDelay > 11.000 & DepDelay <= 0.000))
+6159/224591
+0.02742318
+nrow(subset(hflights, ArrDelay > 11.000 & DepDelay > 0.000))
+48548/224591
+0.2161618
+
+#A - 
+nrow(subset(hflights, ArrDelay > 11.000))
+54707
+#P(A)
+54707
+0.243585
+#P(B)
+nrow(subset(hflights, DepDelay > 0.000))
+109996
+109996/224591
+0.4897614
+
+#P(A)* P(B)
+0.243585 * 0.4897614
+0.1192985
+#P(A|B) = 0.4323236
+#P(A)* P(B) not equal to P(A|B)
+
+#create the correlation matrix for the correlation between ArrDelay and DepDelay
+tbl <- matrix(c(0.482,0.027,0.272,0.216),ncol=2)
+tbl
+chisq.test(tbl, correct=FALSE)
+#data:  tbl
+#X-squared = 0.20514, df = 1, p-value = 0.6506
+#since p-value of 0.6506 is greater than .05, we can reject the null hypothesis a
+#there is a dependence between the x random variable (arrival delay) and the y random variable (departure delay)
+
+
+
+# DESCRIPTIVE and INFERENTIAL STATISTICS
+#Arrival Delays is my random variable X
+#This variable is skewed to the right
+#Median is less than the mean
+my.ArrDelay <- hflights$ArrDelay
+hist(my.ArrDelay, xaxp=c(-50,300,20))
+
+summary(my.ArrDelay)
+## Min.    1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+## -70.000  -8.000   0.000   7.094  11.000 978.000    3622 
+var(hflights$ArrDelay, na.rm=TRUE)
+943.013
+length(my.ArrDelay)
+# N = 227496 - 3622
+# take out the NA's to arrive at the true sample n
+227496 - 3622
+223874
+
+#Deparature Delays is my random variable Y
+#This variable is also skewed to the right
+#Median is less than the mean
+my.DepDelay <- 
+hist(my.DepDelay, xaxp=c(-50,300,20))
+
+summary(my.DepDelay)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#-33.000  -3.000   0.000   9.445   9.000 981.000    2905 
+var(hflights$DepDelay, na.rm = TRUE)
+829.6482
+length(my.DepDelay)
+# N = 227496 - 2905
+227496 - 2905
+224591
+
+#scatterplot of variables X (ArrDelay) and Y (DepDelay) 
+plot(hflights$ArrDelay, hflights$DepDelay, main="Arrival/Departure Delays Relationship", xlab="Arrival Delay", ylab="Departure Delay", pch=19)
+
+MSE <- (829.6482 + 943.013)/2
+MSE
+886.3306
+
+sm1m2 <- sqrt((2*MSE)/((224591+223874)/2))
+sm1m2
+0.08891266
+
+#degrees of freedom
+224591+223874-2
+448463
+#t = 1.96 for 95% confidence interval
+
+M2M1 <- 9.445 - 7.094
+M2M1
+2.351
+
+#for 95% confidence interval
+lower.limit = 2.351-(1.96)*(0.08891266)
+lower.limit
+upper.limit = 2.351-(1.96)*(0.08891266)
+upper.limit
+
+
+#correlation matrix
+my.flights <- na.omit(hflights)
+cor(my.flights$ArrDelay, my.flights$DepDelay)
+0.9292181
+my.corrmat = matrix(c(1.0,0.93,0.93,1), ncol =2)
+my.corrmat
+
+#Z' = 1.653
+my.stderr = 1/sqrt(224232.5-3)
+my.stderr
+
+lower.limit = 1.653 - (2.58)*(0.002)
+lower.limit
+1.64784
+upper.limit = 1.653 + (2.58)*(0.002)
+upper.limit
+1.65816
+
+#convert back to r values (99% confidence interval)
+#0.929 < p < 0.930
+
+#conclusion - we reject the null hypothesis that arrival and departure delay have 0 correlation.
+#In fact, they are very strongly correlated.
+
+
+#Linear Algebra and Correlation
+
+#Invert the correlation matrix to get the precision matrix
+my.presmat <- solve(my.corrmat)
+my.presmat
+#Multiply the correlation matrix by the precision matrix
+my.id <- my.corrmat%*%my.presmat
+#Multiply the the precision matrix by the correlation matrix
+my.id2 <- my.presmat%*%my.corrmat
+
+
+#Calculus based Probability and Statistics
+
+my.ArrDelay <- my.flights$ArrDelay
+my.ArrDelay <- my.ArrDelay + 70
+summary(my.ArrDelay)
+
+library(MASS)
+#run to fit an exponential distribution
+fitdistr(my.ArrDelay, "exponential")
+#rate   - optimal value of lambda  
+#1.297112e-02 
+#(2.741421e-05)
+my.ArrDelay.exp <- rexp(1000, 1.297112e-02)
+
+#Histogram of the original X variable (ArrDelay) before fit
+hist(my.ArrDelay, xaxp=c(-50,300,20))
+#Histogram of the original X variable (ArrDelay) after fit
+hist(my.ArrDelay.exp, yaxp=c(0,500,10))
+
+#5th percentile using cdf
+qexp(.05,rate=.297112e-02)
+17.26396
+#95th percentile using cdf
+qexp(.95,rate=.297112e-02)
+1008.284
+
+#determine n and standard deviation
+length(my.ArrDelay)
+sd(my.ArrDelay)
+
+#determine standard error
+error <- qt(0.975,df=length(my.ArrDelay)-1)*sd(my.ArrDelay)/sqrt(length(my.ArrDelay))
+0.127206
+
+left <- mean(my.ArrDelay)-error
+right <- mean(my.ArrDelay)+error
+#95% confidence interval for empirical data
+# 76.96713 <= mean <= 77.2215
+
+#empiral 5th and 95th percentile of empirlcal data
+quantile(my.ArrDelay, prob=c(0.05,0.95))
+
+
+
+```
+
+
